@@ -5,8 +5,10 @@ import os
 import prefect
 import dateutil.parser
 
+from flask import Flask, Response
+
 from prometheus_client import generate_latest, REGISTRY, start_http_server
-from prometheus_client.core import GaugeMetricFamily, Metric
+from prometheus_client.core import GaugeMetricFamily
 from prometheus_client.samples import Sample
 
 
@@ -102,8 +104,18 @@ class PrefectCollector:
 REGISTRY.register(PrefectCollector())
 
 
-if __name__ == "__main__":
-    start_http_server(8080, addr='0.0.0.0')
+app = Flask(__name__)
 
-    while True:
-        time.sleep(1)
+
+@app.route('/')
+def ok():
+    return 'ok'
+
+
+@app.route('/metrics/')
+def metrics():
+    return Response(generate_latest(), mimetype='text/plain')
+
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=8080)
