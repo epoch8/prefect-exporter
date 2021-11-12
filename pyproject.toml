@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "prefect-exporter"
+version = "0.1.0"
+description = "Prometheus exporter for Prefect"
+authors = ["Andrey Tatarinov <a@tatarinov.co>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+prometheus-client = "^0.12.0"
+prefect = "^0.15.9"
+python-dateutil = "^2.8.2"
+
+[tool.poetry.dev-dependencies]
+ipykernel = "^6.5.0"
+mypy = "^0.910"
+types-python-dateutil = "^2.8.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
