@@ -64,36 +64,36 @@ class PrefectCollector:
         )
 
         for res in fetch_all(client, """
-            query($offset: Int) {
-            res: flow_run_aggregate(
-                distinct_on: [flow_id, state, parameters]
-                where: {
-                state: {_neq: "Scheduled"}
-                flow: {
-                    archived: {_eq: false}
-                }
-                }
-                offset: $offset
-            ) {
-                nodes {
-                flow {
-                    name
-                    project {
-                    name
-                    }
-                }
-                parameters
-                state
-                state_timestamp
-                }
-                aggregate {
-                max {
-                    state_timestamp
-                }
-                count
-                }
-            }
-            }
+query($offset: Int) {
+res: flow_run_aggregate(
+    distinct_on: [flow_id, state, parameters]
+    where: {
+    state: {_neq: "Scheduled"}
+    flow: {
+        archived: {_eq: false}
+    }
+    }
+    offset: $offset
+) {
+    nodes {
+    flow {
+        name
+        project {
+        name
+        }
+    }
+    parameters
+    state
+    state_timestamp
+    }
+    aggregate {
+    max {
+        state_timestamp
+    }
+    count
+    }
+}
+}
         """):
             for labels, value in to_metrics(res):
                 _add_gauge_metric(flow_run_last_state, labels, value)
