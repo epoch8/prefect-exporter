@@ -58,41 +58,47 @@ class PrefectCollector:
     
     def collect(self):
         flow_run_last_state = GaugeMetricFamily(
-            'flow_run_last_state_ts',
+            'prefect_flow_run_last_state_ts',
             'Metric that captures timestamp of last Successful and Failed runs of each flow with each unique parameters set',
             labels=['state', 'project', 'flow']
         )
 
         for res in fetch_all(client, """
 query($offset: Int) {
-res: flow_run_aggregate(
+  res: flow_run_aggregate(
     distinct_on: [flow_id, state, parameters]
     where: {
-    state: {_neq: "Scheduled"}
-    flow: {
+      state: {_in: ["Success", "Failed"]}
+      flow: {
         archived: {_eq: false}
-    }
+      }
     }
     offset: $offset
-) {
+    order_by: [
+      {flow_id: asc}
+      {state: asc}
+      {parameters: asc}
+      {state_timestamp: desc_nulls_last}
+    ]
+  ) {
+    aggregate {
+      max {
+        state_timestamp
+      }
+      count
+    }
     nodes {
-    flow {
+      flow {
         name
         project {
-        name
+          name
         }
+      }
+      parameters
+      state
+      state_timestamp
     }
-    parameters
-    state
-    state_timestamp
-    }
-    aggregate {
-    max {
-        state_timestamp
-    }
-    count
-    }
-}
+  }
 }
         """):
             for labels, value in to_metrics(res):

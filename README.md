@@ -8,7 +8,7 @@ Environment variables:
 
 ## Metrics schema
 
-### `flow_run_last_state_ts`
+### `prefect_flow_run_last_state_ts`
 
 Timestamp of last flow run for each flow, project and state combination.
 

@@ -7,6 +7,9 @@ RUN apt-get -qy update && apt-get install --no-install-recommends -y git
 RUN pip install pip --upgrade
 RUN pip install poetry==$POETRY_VERSION
 
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
 COPY poetry.lock pyproject.toml ./
 
 # Disable virtualenv creation for poetry
